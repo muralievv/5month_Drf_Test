@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment (САМОЕ ВАЖНОЕ)
+venv/
+env/
+.env/
+ENV/
+
+# Secrets (Никогда не пушь ключи!)
+.env
+local_settings.py
+db.sqlite3
+*.log
+
+# IDE files (VS Code, PyCharm)
+.vscode/
+.idea/
+
+# Media and Static (Обычно не хранятся в гите)
+media/
+staticfiles/
+
+# OS files
+.DS_Store
+Thumbs.db
