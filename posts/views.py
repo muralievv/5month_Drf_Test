@@ -13,9 +13,14 @@ from .permissions import IsOwnerOrReadOnly
 # Create your views here.
 
 class PostApiViewSet(ModelViewSet):
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+     if self.request.user.is_authenticated:
+        return Post.objects.all()
+     return Post.objects.filter(is_published=True)
+
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
