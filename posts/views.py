@@ -12,9 +12,14 @@ from .permissions import IsOwnerOrReadOnly
 
 # Create your views here.
 
+class PostPagination(PageNumberPagination):
+    page_size = 5
+
+
 class PostApiViewSet(ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    pagination_class = PostPagination
 
     def get_queryset(self):
      if self.request.user.is_authenticated:
