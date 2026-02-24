@@ -21,7 +21,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment 
-        fields = ['id', 'body', 'created_at', 'updated_at', 'is_approved', 'post_id']
+        fields = ['id', 'body', 'created_at', 'updated_at', 'is_approved']
     def validate_post_id(self, post_id):
         try:
             Post.objects.get(id=post_id)
