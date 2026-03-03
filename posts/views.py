@@ -8,7 +8,8 @@ from rest_framework.viewsets import ModelViewSet
 from .serializers import PostSerializer, CommentSerializer, CommentCreateSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from .permissions import IsOwnerOrReadOnly
+from common.permissions import IsOwnerOrReadOnly
+
 
 # Create your views here.
 

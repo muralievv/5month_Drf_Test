@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Post, Comment
 from rest_framework.exceptions import ValidationError
+from common.validators import validate_birth_date
 
 class PostSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
@@ -9,6 +10,13 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'title', 'body', 'created_at', 'updated_at', 'is_published']
         read_only_fields = ['author']
+    def validate(self, attrs):
+
+        user = self.context['request'].user
+        
+        validate_birth_date(user.birth_date)
+        
+        return attrs
 
 class CommentSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
