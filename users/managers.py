@@ -14,7 +14,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
-        # ПУНКТ ТЗ: телефон обязателен ТОЛЬКО для суперпользователя
         phone_number = extra_fields.get('phone_number')
         if not phone_number:
             raise ValueError('Для создания суперпользователя номер телефона обязателен!')

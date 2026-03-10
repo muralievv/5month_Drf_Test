@@ -13,6 +13,7 @@ from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.cache import cache
 
 
 User = get_user_model()
@@ -31,7 +32,8 @@ def registration_api_view(request):
     birth_date = serializer.validated_data.get('birth_date', None)
     user = User.objects.create_user(email=email, password=password, phone_number=phone, birth_date=birth_date, is_active=False)
     generated_code = str(random.randint(100000, 999999))
-    UserConfirmation.objects.create(user=user, code=generated_code)
+    cache_key = f"otp_{email}"
+    cache.set(cache_key, generated_code, timeout=300)
     return Response(status=status.HTTP_201_CREATED, data={'id': user.id, 'email':user.email, 'code':generated_code})
 
 @swagger_auto_schema(
@@ -44,20 +46,20 @@ def confirmation_api_view(request):
     serializer.is_valid(raise_exception=True)
     email = serializer.validated_data['email']
     code = serializer.validated_data['code']
+    cache_key = f"otp_{email}"
+    saved_code = cache.get(cache_key)
     try:
         user = User.objects.get(email=email)
-        confirmation = UserConfirmation.objects.get(user=user)
-        if  confirmation.code == code:
+        if  saved_code is not None and saved_code == code:
             user.is_active = True
             user.save()
-            confirmation.delete()
+            cache.delete(cache_key)
             return Response(status=status.HTTP_200_OK, data={'message': 'User confirmed successfully'})
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'Invalid confirmation code'})
     except User.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND, data={'error': 'User not found'})
-    except UserConfirmation.DoesNotExist: 
-        return Response(status=status.HTTP_404_NOT_FOUND, data={'error': 'Confirmation not found'})
+
 
 @swagger_auto_schema(method='post', request_body=UserAunthenticationSerializer)
 @api_view(['POST'])
