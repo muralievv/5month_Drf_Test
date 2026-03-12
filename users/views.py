@@ -1,3 +1,5 @@
+import code
+
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -14,7 +16,7 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.cache import cache
-
+from .tasks import sent_otp_email
 
 User = get_user_model()
 
@@ -34,6 +36,7 @@ def registration_api_view(request):
     generated_code = str(random.randint(100000, 999999))
     cache_key = f"otp_{email}"
     cache.set(cache_key, generated_code, timeout=300)
+    sent_otp_email.delay(email, generated_code)
     return Response(status=status.HTTP_201_CREATED, data={'id': user.id, 'email':user.email, 'code':generated_code})
 
 @swagger_auto_schema(
