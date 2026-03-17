@@ -147,15 +147,15 @@ AUTH_USER_MODEL = 'users.User'
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": config("REDIS_CACHE"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         }
     }
 }
 
-CELERY_BROKER_URL="redis://127.0.0.1:6379/2"
-CELERY_RESULT_BACKEND="redis://127.0.0.1:6379/2"
+CELERY_BROKER_URL=config("CELERY_BROKER_URL")
+CELERY_BROKER_BACKEND=config("CELERY_BROKER_BACKEND")
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
